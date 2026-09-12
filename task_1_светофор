@@ -1,0 +1,32 @@
+#include <Arduino.h>
+int green = 13, delay_green = 5000;
+int yellow = 12, delay_yellow = 2000;
+int red = 11, delay_red = 5000;
+void setup() {
+    pinMode(green, OUTPUT);
+    pinMode(yellow, OUTPUT);
+    pinMode(red, OUTPUT);
+}
+
+void loop() {
+    digitalWrite(green, HIGH);
+    delay(delay_green);
+    digitalWrite(green, LOW);
+    for(int i = 0; i < 4; i++){
+      digitalWrite(green, HIGH);
+      delay(500);
+      digitalWrite(green, LOW);
+      delay(500);
+    }
+    digitalWrite(yellow, HIGH);
+    delay(delay_yellow);
+    digitalWrite(yellow, LOW);
+    digitalWrite(red, HIGH);
+    delay(delay_red);
+    digitalWrite(red, LOW);
+    digitalWrite(red, HIGH);
+    digitalWrite(yellow, HIGH);
+    delay(delay_yellow);
+    digitalWrite(red, LOW);
+    digitalWrite(yellow, LOW);
+}
