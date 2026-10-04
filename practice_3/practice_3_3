@@ -1,0 +1,48 @@
+#include <Arduino.h>
+int led1 = 8;
+int button = 2;
+int led2 = 9;
+int short_counter = 0;
+const unsigned long short_holding = 500;
+const unsigned long long_holding = 1000;
+unsigned long press_time = 0;
+unsigned long toggle_time = 0;
+unsigned long hold_time = 0;
+unsigned long led2_start;
+unsigned long led2_finish;
+bool lastReading = HIGH;
+bool short_ = false;
+bool long_ = false;
+bool pressed = false;
+void setup(){
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  pinMode(button, INPUT_PULLUP);
+}
+
+void loop(){
+  bool reading = digitalRead(button);
+  if(reading == LOW && lastReading == HIGH){
+    press_time = millis();
+  }
+  if(reading == HIGH && lastReading == LOW){
+    toggle_time = millis();
+    pressed = true;
+  }
+  if(pressed){
+    hold_time = toggle_time - press_time;
+
+    if(hold_time < short_holding) {short_ = true; short_counter +=1;}
+    if(hold_time > long_holding) { long_ = true;  led2_start = millis(); digitalWrite(led2, HIGH);}
+
+    if(long_ == false && short_ && short_counter%2 != 0 ){digitalWrite(led1, HIGH); short_ = false;} 
+    else if(long_ == false && short_ && short_counter%2 == 0) {digitalWrite(led1, LOW); short_ = false;}
+
+  }
+  if(long_){
+      led2_finish = millis();
+      if(led2_finish - led2_start > 3000) {digitalWrite(led2, LOW); long_ = false;}
+    }
+  pressed = false;
+  lastReading = reading;
+}
