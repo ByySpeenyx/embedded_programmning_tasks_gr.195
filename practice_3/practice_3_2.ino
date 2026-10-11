@@ -1,0 +1,37 @@
+#include <Arduino.h>
+int led = 8;
+int button = 2;
+int press_counter= 0 ;
+const unsigned long DEBOUNCE_MS = 30;
+bool lastStable = HIGH;
+bool lastReading = HIGH;
+bool pressed = false;
+unsigned long lastChange = 0;
+void setup(){
+  Serial.begin(9600);
+  pinMode(led, OUTPUT);
+  pinMode(button, INPUT_PULLUP);
+}
+
+void loop(){
+
+  bool reading = digitalRead(button);
+  if(reading != lastReading){
+    lastReading = reading;
+    lastChange = millis();
+  }
+
+  if(millis() - lastChange > DEBOUNCE_MS && reading != lastStable){
+    lastStable = reading;
+    if( lastStable == LOW){
+      pressed = true;
+      press_counter += 1;
+    }
+  }
+
+  if(pressed && press_counter%2 != 0) { digitalWrite(led, HIGH); Serial.print("Количество нажатий: ");
+  Serial.println(press_counter); } else if(pressed && press_counter%2 == 0) { digitalWrite(led, LOW); Serial.print("Количество нажатий: ");
+  Serial.println(press_counter);}
+  
+  pressed = false;
+}

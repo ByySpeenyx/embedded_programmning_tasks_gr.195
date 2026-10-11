@@ -1,0 +1,111 @@
+
+#include <Arduino.h>
+
+int green_d = 8;
+int yellow_d =9;
+int red_d = 10;
+
+int green_w = 12;
+int red_w = 11;
+
+int BUTTON = 2;
+
+int delay_yellow = 2000;
+int delay_red = 5000;
+
+const unsigned long DEBOUNCE_MS = 30;
+
+bool lastStable = HIGH;
+bool lastReading = HIGH;
+unsigned long lastChange = 0;
+
+void setup() {
+  pinMode(green_d, OUTPUT);
+  pinMode(yellow_d, OUTPUT);
+  pinMode(red_d, OUTPUT);
+
+  pinMode(green_w, OUTPUT);
+  pinMode(red_w, OUTPUT);
+
+  pinMode(BUTTON, INPUT_PULLUP);
+}
+
+void loop() {
+  bool reading = digitalRead(BUTTON);
+
+
+  if (reading != lastReading) {
+    lastReading = reading;
+    lastChange = millis();
+  }
+
+
+  bool pressed = false;
+
+  if (millis() - lastChange > DEBOUNCE_MS &&
+      reading != lastStable) {
+
+    lastStable = reading;
+
+
+    if (lastStable == LOW) {
+      pressed = true;
+    }
+  }
+
+
+  digitalWrite(green_d, HIGH);
+  digitalWrite(red_w, HIGH);
+
+
+  if (pressed) {
+
+
+    digitalWrite(green_d, LOW);
+
+    for (int i = 0; i < 3; i++) {
+      digitalWrite(green_d, HIGH);
+      delay(500);
+
+      digitalWrite(green_d, LOW);
+      delay(500);
+    }
+
+
+    digitalWrite(yellow_d, HIGH);
+    delay(delay_yellow);
+    digitalWrite(yellow_d, LOW);
+
+   
+    digitalWrite(red_d, HIGH);
+    digitalWrite(green_w, HIGH);
+    digitalWrite(red_w, LOW);
+
+    delay(delay_red);
+
+
+    for (int i = 0; i < 3; i++) {
+      digitalWrite(green_w, LOW);
+      delay(500);
+
+      digitalWrite(green_w, HIGH);
+      delay(500);
+    }
+
+
+    digitalWrite(green_w, LOW);
+    digitalWrite(red_w, HIGH);
+
+    digitalWrite(red_d, LOW);
+    digitalWrite(yellow_d, HIGH);
+    delay(delay_yellow);
+    digitalWrite(yellow_d, LOW);
+
+    digitalWrite(green_d, HIGH);
+
+
+    lastReading = digitalRead(BUTTON);
+    lastStable = lastReading;
+    lastChange = millis();
+  }
+}
